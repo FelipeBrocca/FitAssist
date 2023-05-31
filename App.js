@@ -1,10 +1,17 @@
-import LoginService from './components/Login/LoginService'
+import Main from './Navigators/Main';
+import { NavigationContainer } from '@react-navigation/native';
+
 
 const App = () => {
   return (
-    <LoginService />
+    <NavigationContainer>
+      <Main />
+    </NavigationContainer>
   );
 }
 
 export default App;
 
+// #363435  GRIS
+// #FE6816  NARANJA
+// #00CAA6  VERDE

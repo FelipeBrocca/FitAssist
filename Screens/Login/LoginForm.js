@@ -1,27 +1,20 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Image, View, StyleSheet, TextInput, TouchableOpacity, Text } from 'react-native';
 
-const LoginForm = () => {
-
-    const [values, setValues] = useState({
-        email: '',
-        password: ''
-    })
-
-    const manageInputs = (name, value) => {
-      setValues({...values, [name]: value})
-      console.log(values);
-    }
+const LoginForm = ({ manageInputs, navigation, handleSubmit, errors }) => {
 
     return (
         <View style={styles.container}>
-            <Image style={styles.logo} source={require('../../assets/logo-claro.png')} />
+            <Image
+                style={styles.logo}
+                source={require('../../assets/logo-claro.png')}
+            />
 
             <TextInput
                 placeholder='Email'
                 keyboardType='email-address'
                 style={styles.input}
-                onChangeText={(value) => manageInputs('email', value)}
+                onChangeText={(value) => manageInputs('email', value.toLowerCase())}
             ></TextInput>
 
             <TextInput
@@ -31,9 +24,20 @@ const LoginForm = () => {
                 onChangeText={(value) => manageInputs('password', value)}
             ></TextInput>
 
-            <TouchableOpacity title='Ingresar' style={styles.button}>
+            <View>
+                {errors ? <Text style={styles.errors}>{errors}</Text> : ''}
+            </View>
+
+            <TouchableOpacity onPress={() => handleSubmit()} title='Ingresar' style={styles.button}>
                 <Text style={styles.buttonText}>Ingresar</Text>
             </TouchableOpacity>
+
+            <View style={styles.registerContainer}>
+                <Text style={styles.registerTitle}>No estás registrado aún?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                    <Text style={styles.registerLink}>Registrate</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }
@@ -46,10 +50,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 10,
         paddingVertical: 20,
-        gap: 20
+        gap: 20,
+        maxWidth: 400
     },
     input: {
-        width: '90%',
+        width: '100%',
         height: 38,
         backgroundColor: 'whitesmoke',
         borderWidth: 0.3,
@@ -71,8 +76,24 @@ const styles = StyleSheet.create({
     logo: {
         width: '80%',
         height: '80%',
-        maxWidth: 200,
-        maxHeight: 200
+        maxWidth: 150,
+        maxHeight: 150
+    },
+    registerContainer: {
+        width: '100%',
+        gap: 5,
+        alignItems: 'flex-end'
+    },
+    registerTitle: {
+        color: 'whitesmoke'
+    },
+    registerLink: {
+        fontSize: 16,
+        color: '#00CAA6'
+    },
+    errors: {
+        color: 'red'
     }
 })
 export default LoginForm
+

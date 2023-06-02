@@ -1,12 +1,23 @@
-import Main from './Navigators/Main';
 import { NavigationContainer } from '@react-navigation/native';
 
+//NAVIGATORS
+import Main from './Navigators/Main';
+
+//REDUX
+// import { Provider } from 'react-redux';
+// import store from './Redux/store';
+
+
+// CONTEXT API
+import Auth from './Context/store/Auth'
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Main />
-    </NavigationContainer>
+    <Auth>
+      <NavigationContainer>
+        <Main />
+      </NavigationContainer>
+    </Auth>
   );
 }
 

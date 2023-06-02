@@ -46,7 +46,7 @@ const RegisterForm = ({ manageInputs, toggleSwitch, toggleValue, navigation, err
       </View>
 
       <View>
-        {errors ? <Text style={styles.errors}>{errors}</Text> : ''}
+        <Text style={styles.errors}>{errors ? errors : ''}</Text>
       </View>
 
       <TouchableOpacity onPress={() => handleSubmit()} title='registrarse' style={styles.button}>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   errors: {
-      color: 'red'
+    color: 'red'
   }
 })
 

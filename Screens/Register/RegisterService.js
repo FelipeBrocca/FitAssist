@@ -1,12 +1,17 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { View, StyleSheet, Dimensions, ScrollView } from 'react-native'
 import RegisterForm from './RegisterForm'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
-const { width, height } = Dimensions.get('window')
+
+import baseUrl from '../../assets/common/baseUrl';
+import axios from 'axios'
+import AuthGlobal from '../../Context/store/AuthGlobal';
+
+const { width } = Dimensions.get('window')
 
 const RegisterService = ({ navigation }) => {
 
+  const context = useContext(AuthGlobal)
   const [errors, setErrors] = useState('')
   const [values, setValues] = useState({
     email: '',
@@ -15,6 +20,12 @@ const RegisterService = ({ navigation }) => {
     username: '',
     isCoach: false
   })
+
+  useEffect(() => {
+    if (context.stateUser.isAuthenticated === true) {
+      navigation.navigate('Home')
+    }
+  }, [context.stateUser.isAuthenticated])
 
   const manageInputs = useCallback((name, value) => {
     setValues({ ...values, [name]: value });
@@ -27,16 +38,39 @@ const RegisterService = ({ navigation }) => {
   const handleSubmit = () => {
     if (!values.email || !values.password || !values.confirmPassword || !values.username) {
       setErrors('Complete todos los campos')
-    } else if (values.password && values.confirmPassword && values.password !== values.confirmPassword){
+    } else if (values.password && values.confirmPassword && values.password !== values.confirmPassword) {
       setErrors('Las contraseñas no coinciden')
     } else {
-      setErrors('')
-      console.log(values);
+
+      let user = {
+        email: values.email,
+        name: values.username,
+        isCoach: values.isCoach,
+        password: values.password
+      }
+
+      axios
+        .post(`${baseUrl}/users`, user)
+        .then((res) => {
+          if (res.status === 201) {
+            setTimeout(() => {
+              navigation.navigate("Login");
+            }, 300);
+            setErrors("");
+          }
+        })
+        .catch((err) => {
+          if (err.response && err.response.status === 400) {
+            setErrors('Email ya registrado');
+          } else {
+            console.log(err);
+          }
+        });
     }
   }
 
   return (
-    <SafeAreaView style={[styles.container]}>
+    <View style={[styles.container]}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <RegisterForm
           manageInputs={manageInputs}
@@ -47,7 +81,7 @@ const RegisterService = ({ navigation }) => {
           handleSubmit={handleSubmit}
         />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }
 

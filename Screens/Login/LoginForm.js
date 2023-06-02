@@ -1,7 +1,7 @@
 import React from 'react'
 import { Image, View, StyleSheet, TextInput, TouchableOpacity, Text } from 'react-native';
 
-const LoginForm = ({ manageInputs, navigation, handleSubmit, errors }) => {
+const LoginForm = ({ manageInputs, navigation, handleSubmit, errors, values }) => {
 
     return (
         <View style={styles.container}>
@@ -14,7 +14,8 @@ const LoginForm = ({ manageInputs, navigation, handleSubmit, errors }) => {
                 placeholder='Email'
                 keyboardType='email-address'
                 style={styles.input}
-                onChangeText={(value) => manageInputs('email', value.toLowerCase())}
+                onChangeText={(value) => manageInputs('email', value)}
+                value={values.email}
             ></TextInput>
 
             <TextInput
@@ -22,10 +23,11 @@ const LoginForm = ({ manageInputs, navigation, handleSubmit, errors }) => {
                 secureTextEntry={true}
                 style={styles.input}
                 onChangeText={(value) => manageInputs('password', value)}
+                value={values.password}
             ></TextInput>
 
             <View>
-                {errors ? <Text style={styles.errors}>{errors}</Text> : ''}
+                <Text style={styles.errors}>{errors ? errors : ''}</Text>
             </View>
 
             <TouchableOpacity onPress={() => handleSubmit()} title='Ingresar' style={styles.button}>

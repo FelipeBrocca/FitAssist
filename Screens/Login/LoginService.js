@@ -18,19 +18,9 @@ const LoginService = ({ navigation }) => {
     password: ''
   })
 
-  useEffect(() => {
-    if (context.stateUser.isAuthenticated === true) {
-      navigation.navigate('Home')
-    }
-  }, [context.stateUser.isAuthenticated])
-
   const manageInputs = useCallback((name, value) => {
     setValues({ ...values, [name]: value });
   }, [setValues, values]);
-
-  const resetForm = () => {
-    setValues({ email: '', password: '' })
-  }
 
   const handleSubmit = () => {
     if (!values.email) {
@@ -39,6 +29,9 @@ const LoginService = ({ navigation }) => {
       setErrors('Ingrese una contraseña')
     } else {
       loginUser(values, context.dispatch)
+        .catch((err) => {
+          setErrors(err.message);
+        });
       setErrors('')
     }
   }

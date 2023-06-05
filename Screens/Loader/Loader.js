@@ -5,23 +5,7 @@ import AuthGlobal from '../../Context/store/AuthGlobal';
 
 const { width, height } = Dimensions.get("window")
 
-const Loader = ({ navigation }) => {
-
-    const context = useContext(AuthGlobal)
-
-    useEffect(() => {
-        if (context.stateUser.isAuthenticated !== null &&
-            context.stateUser.isAuthenticated === true) {
-            setTimeout(() => {
-                navigation.navigate("Home");
-            }, 1000);
-        } else if (context.stateUser.isAuthenticated === null ||
-            context.stateUser.isAuthenticated === true) {
-            setTimeout(() => {
-                navigation.navigate("Login");
-            }, 1000);
-        }
-    }, [context.stateUser.isAuthenticated])
+const Loader = () => {
 
     return (
         <View style={styles.container}>
@@ -32,13 +16,17 @@ const Loader = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
         width: width,
         height: height,
         backgroundColor: '#363435',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center'
-    },
+        justifyContent: 'center',
+        zIndex: 100,
+      },
     logo: {
         width: '80%',
         maxWidth: 200,

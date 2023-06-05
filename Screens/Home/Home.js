@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Button } from 'react-native'
+import { View, Text, StyleSheet, Button, ScrollView, Dimensions } from 'react-native'
 
 import baseUrl from '../../assets/common/baseUrl'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../Context/store/AuthGlobal';
 import { logOut } from '../../Context/actions/Auth.actions'
+import Header from '../../Shared/Header'
 
+
+const { width, height } = Dimensions.get('window')
 
 const Home = ({ navigation }) => {
 
@@ -14,9 +17,6 @@ const Home = ({ navigation }) => {
     const [envi, setEnvi] = useState([])
 
     useEffect(() => {
-        if (context.stateUser.isAuthenticated === null) {
-            navigation.navigate("Profile")
-        }
         if (context.stateUser.isAuthenticated === false) {
             navigation.navigate("Login")
         }
@@ -37,35 +37,44 @@ const Home = ({ navigation }) => {
     }, [context.stateUser.isAuthenticated])
 
     return (
-        <View style={styles.container}>
-            {
-                envi[0]
-                    ? envi.map((en, index) => (
-                        <Text key={index}>{en.mainPlace}</Text>
-                    ))
-                    : ''
-            }
-            <Button
-                title='Cerrar sesion'
-                onPress={async () => {
-                    try {
-                        await AsyncStorage.removeItem("fTjAsWiT")
-                        logOut(context.dispatch);
-                    } catch (error) {
-                        console.error(error);
-                    } finally {
-                        navigation.navigate("Login")
-                    }
-                }}
-            />
-        </View>
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+            <View style={styles.container}>
+                {
+                    envi[0]
+                        ? envi.map((en, index) => (
+                            <Text key={index}>{en.mainPlace}</Text>
+                        ))
+                        : null
+                }
+                <Button
+                    title='Cerrar sesion'
+                    onPress={async () => {
+                        try {
+                            await AsyncStorage.removeItem("fTjAsWiT")
+                            logOut(context.dispatch);
+                        } catch (error) {
+                            console.error(error);
+                        } finally {
+                            if (Object.keys(context.stateUser.user).length <= 0){
+                                navigation.navigate("Login")
+                            }
+                        }
+                    }}
+                />
+            </View>
+        </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
+    contentContainer: {
+        width: width,
+        height: height,
+        backgroundColor: '#363435'
+    },
     container: {
-        width: '100%',
-        height: '100%',
+        width: width,
+        height: height - 50,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'

@@ -5,29 +5,38 @@ import baseUrl from "../../assets/common/baseUrl";
 export const SET_CURRENT_USER = "SET_CURRENT_USER"
 
 export const loginUser = (user, dispatch) => {
-    fetch(`${baseUrl}/login`, {
+    return new Promise((resolve, reject) => {
+      fetch(`${baseUrl}/login`, {
         method: 'POST',
         body: JSON.stringify(user),
         headers: {
-            Accept: 'application/json',
-            "Content-Type": 'application/json',
+          Accept: 'application/json',
+          "Content-Type": 'application/json',
         },
-    })
-        .then((res) => res.json())
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            return res.json();
+          } else if (res.status === 400) {
+            return res.json().then((data) => {
+              throw new Error(data.message);
+            });
+          }
+        })
         .then(async (data) => {
-            if (data) {
-                const token = data.token;
-                await AsyncStorage.setItem("fTjAsWiT", token)
-                const decoded = jwt_decode(token)
-                dispatch(setCurrentUser(decoded, user))
-            } else {
-                logOut(dispatch)
-            }
+          const token = data.token;
+          await AsyncStorage.setItem("fTjAsWiT", token);
+          const decoded = jwt_decode(token);
+          dispatch(setCurrentUser(decoded, user));
+          resolve(); 
         })
-        .catch(err => {
-            logOut(dispatch)
-        })
-}
+        .catch((err) => {
+          logOut(dispatch);
+          reject(err); 
+        });
+    });
+  };
+  
 
 export const getUserProfile = (id) => {
     fetch(`${baseUrl}/users/${id}`, {

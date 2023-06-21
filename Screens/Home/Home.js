@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Button, ScrollView, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Dimensions} from 'react-native'
 
 import baseUrl from '../../assets/common/baseUrl'
 import axios from 'axios'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../Context/store/AuthGlobal';
-import { logOut } from '../../Context/actions/Auth.actions'
-import Header from '../../Shared/Header'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 const { width, height } = Dimensions.get('window')
@@ -39,28 +38,21 @@ const Home = ({ navigation }) => {
     return (
         <ScrollView contentContainerStyle={styles.contentContainer}>
             <View style={styles.container}>
+                <View>
                 {
                     envi[0]
-                        ? envi.map((en, index) => (
-                            <Text key={index}>{en.mainPlace}</Text>
-                        ))
+                        ? envi.map((en, index) => {
+                            if (context.stateUser.user.userId && context.stateUser.user.userId === en.coach) {
+                                return (
+                                    <Text key={index}>{en.mainPlace}</Text>
+                                )
+                            } else {
+                                return <Text key={index}>No tiene ambiente creado</Text>
+                            }
+                        })
                         : null
                 }
-                <Button
-                    title='Cerrar sesion'
-                    onPress={async () => {
-                        try {
-                            await AsyncStorage.removeItem("fTjAsWiT")
-                            logOut(context.dispatch);
-                        } catch (error) {
-                            console.error(error);
-                        } finally {
-                            if (Object.keys(context.stateUser.user).length <= 0){
-                                navigation.navigate("Login")
-                            }
-                        }
-                    }}
-                />
+                </View>
             </View>
         </ScrollView>
     )

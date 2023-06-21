@@ -1,15 +1,41 @@
-import React from 'react'
-import { SafeAreaView, Text, Image, StyleSheet, Dimensions, View } from 'react-native'
+import React, {useContext} from 'react'
+import { SafeAreaView, Text, Image, StyleSheet, Dimensions, View, TouchableOpacity } from 'react-native'
+import { logOut } from '../Context/actions/Auth.actions'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthGlobal from '../Context/store/AuthGlobal';
+
+
 
 const { width, height } = Dimensions.get('window')
 
 const Header = () => {
+
+    const context = useContext(AuthGlobal)
+
     return (
         <SafeAreaView style={styles.header}>
             <View style={styles.logoContainer}>
                 <Image style={styles.logo} source={require('../assets/logo-claro.png')} />
                 <Text style={styles.logoTitle}>FitAssist</Text>
             </View>
+            
+            <TouchableOpacity
+                    style={styles.logOut}
+                    onPress={async () => {
+                        try {
+                            await AsyncStorage.removeItem("fTjAsWiT")
+                            logOut(context.dispatch);
+                        } catch (error) {
+                            console.error(error);
+                        } finally {
+                            if (Object.keys(context.stateUser.user).length <= 0) {
+                                navigation.navigate("Login")
+                            }
+                        }
+                    }}
+                >
+                    <Text style={styles.logOutText}>Cerrar sesión</Text>
+                </TouchableOpacity>
         </SafeAreaView>
     )
 }
@@ -39,6 +65,18 @@ const styles = StyleSheet.create({
     logo: {
         height: 50,
         width: 50
+    },
+    logOut: {
+        backgroundColor: "#e02828",
+        padding: 5,
+        borderRadius: 5,
+        color: 'white',
+        alignSelf: 'center'
+    },
+    logOutText: {
+        color: 'whitesmoke',
+        fontWeight: 600,
+        fontSize: 10
     }
 })
 

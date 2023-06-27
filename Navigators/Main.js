@@ -10,6 +10,7 @@ import RegisterService from '../Screens/Register/RegisterService'
 import Home from '../Screens/Home/Home'
 import Loader from '../Screens/Loader/Loader'
 import Header from "../Shared/Header";
+import FormEnvCreate from "../Screens/Coach/CreateEnv/FormEnvCreate";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,30 +31,39 @@ const AuthNavigator = () => {
         <Stack.Navigator initialRouteName={
           Object.keys(stateUser.user).length > 0 ? "Home" : "Login"
         }>
-          {Object.keys(stateUser.user).length > 0
-            ? (
-              <>
-                <Stack.Screen
-                  name="Home"
-                  options={{ headerShown: false }}
-                  component={Home}
-                />
-              </>
-            )
-            : (
-              <>
-                <Stack.Screen
-                  name="Login"
-                  options={{ headerShown: false }}
-                  component={LoginService}
-                />
-                <Stack.Screen
-                  name="Register"
-                  options={{ headerShown: false }}
-                  component={RegisterService}
-                />
-              </>
-            )}
+          {stateUser?.isAuthenticated ? (
+            <>
+              <Stack.Screen
+                name="Home"
+                options={{ headerShown: false }}
+                component={Home}
+              />
+              {
+                stateUser.user.isCoach
+                  ? <>
+                    <Stack.Screen
+                      name="FormEnvCreate"
+                      options={{ headerShown: false }}
+                      component={FormEnvCreate}
+                    />
+                  </>
+                  : null
+              }
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="Login"
+                options={{ headerShown: false }}
+                component={LoginService}
+              />
+              <Stack.Screen
+                name="Register"
+                options={{ headerShown: false }}
+                component={RegisterService}
+              />
+            </>
+          )}
         </Stack.Navigator>
       </>
     )

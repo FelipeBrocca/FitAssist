@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     },
     logoContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-end',
         gap: 10
     },
     logoTitle: {
@@ -70,8 +70,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#e02828",
         padding: 5,
         borderRadius: 5,
-        color: 'white',
-        alignSelf: 'center'
+        color: 'white'
     },
     logOutText: {
         color: 'whitesmoke',

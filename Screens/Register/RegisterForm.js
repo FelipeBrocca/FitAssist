@@ -14,27 +14,27 @@ const RegisterForm = ({ manageInputs, toggleSwitch, toggleValue, navigation, err
         keyboardType='email-address'
         style={styles.input}
         onChangeText={(value) => manageInputs('email', value.toLowerCase())}
-      ></TextInput>
+      />
 
       <TextInput
         placeholder='Nombre'
         style={styles.input}
         onChangeText={(value) => manageInputs('username', value)}
-      ></TextInput>
+      />
 
       <TextInput
         placeholder='Contraseña'
         secureTextEntry={true}
         style={styles.input}
         onChangeText={(value) => manageInputs('password', value)}
-      ></TextInput>
+      />
 
       <TextInput
         placeholder='Repetir contraseña'
         secureTextEntry={true}
         style={styles.input}
         onChangeText={(value) => manageInputs('confirmPassword', value)}
-      ></TextInput>
+      />
 
       <View style={styles.isCoachSwitchContainer}>
         <Text style={styles.isCoachSwitchTitle}>Sos entrenador?</Text>

@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from 'react'
+import React from 'react'
 import { View, Image, StyleSheet, Dimensions } from 'react-native';
-import AuthGlobal from '../../Context/store/AuthGlobal';
 
 
 const { width, height } = Dimensions.get("window")

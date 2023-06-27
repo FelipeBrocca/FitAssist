@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Dimensions} from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native'
 
 import baseUrl from '../../assets/common/baseUrl'
 import axios from 'axios'
 import AuthGlobal from '../../Context/store/AuthGlobal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CreateEnv from '../Coach/CreateEnv/CreateEnv';
 
 
 
@@ -19,14 +20,21 @@ const Home = ({ navigation }) => {
         if (context.stateUser.isAuthenticated === false) {
             navigation.navigate("Login")
         }
-
         AsyncStorage.getItem('fTjAsWiT')
             .then((res) => {
                 axios
-                    .get(`${baseUrl}/environments`, {
+                    .get(`${baseUrl}/users/${context.stateUser.user.userId}`, {
                         headers: { Authorization: `Bearer ${res}` }
                     })
-                    .then(envis => setEnvi(envis.data))
+                    .then(envis => {
+                        envis.data.environment.map((env) => (
+                            axios
+                                .get(`${baseUrl}/environments/${env}`, {
+                                    headers: { Authorization: `Bearer ${res}` }
+                                })
+                                .then(en => setEnvi(prev => [...prev, en.data]))
+                        ))
+                    })
             })
             .catch(err => console.log(err))
 
@@ -36,40 +44,48 @@ const Home = ({ navigation }) => {
     }, [context.stateUser.isAuthenticated])
 
     return (
-        <ScrollView contentContainerStyle={styles.contentContainer}>
-            <View style={styles.container}>
-                <View>
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.envList}>
                 {
-                    envi[0]
-                        ? envi.map((en, index) => {
-                            if (context.stateUser.user.userId && context.stateUser.user.userId === en.coach) {
-                                return (
-                                    <Text key={index}>{en.mainPlace}</Text>
-                                )
-                            } else {
-                                return <Text key={index}>No tiene ambiente creado</Text>
-                            }
-                        })
-                        : null
+                    context?.stateUser?.user?.isCoach
+                    ? envi[0]
+                    ? envi.map((envi, index) => (
+                        <Text key={index}>{envi.mainPlace}</Text>
+                    ))
+                    : <Text>No tiene grupo creado</Text>
+                    : envi[0]
+                    ? envi.map((envi, index) => (
+                        <Text key={index}>{envi.mainPlace}</Text>
+                    ))
+                    : <Text>No es coach</Text>
                 }
-                </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+            {
+                context?.stateUser?.user?.isCoach
+                    ? <CreateEnv navigation={navigation} />
+                    : null
+            }
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
-    contentContainer: {
-        width: width,
-        height: height,
-        backgroundColor: '#363435'
-    },
+
     container: {
         width: width,
         height: height - 50,
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: '#363435'
+    },
+    envList: {
+        width: width,
+        height: height,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 })
 

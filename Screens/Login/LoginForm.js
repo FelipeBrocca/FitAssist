@@ -16,7 +16,7 @@ const LoginForm = ({ manageInputs, navigation, handleSubmit, errors, values }) =
                 style={styles.input}
                 onChangeText={(value) => manageInputs('email', value)}
                 value={values.email}
-            ></TextInput>
+            />
 
             <TextInput
                 placeholder='Contraseña'
@@ -24,7 +24,7 @@ const LoginForm = ({ manageInputs, navigation, handleSubmit, errors, values }) =
                 style={styles.input}
                 onChangeText={(value) => manageInputs('password', value)}
                 value={values.password}
-            ></TextInput>
+            />
 
             <View>
                 <Text style={styles.errors}>{errors ? errors : ''}</Text>

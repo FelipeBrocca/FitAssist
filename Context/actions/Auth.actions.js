@@ -36,7 +36,6 @@ export const loginUser = (user, dispatch) => {
         });
     });
   };
-  
 
 export const getUserProfile = (id) => {
     fetch(`${baseUrl}/users/${id}`, {

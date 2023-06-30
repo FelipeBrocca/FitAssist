@@ -1,6 +1,6 @@
 import jwt_decode from "jwt-decode";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import baseUrl from "../../assets/common/baseUrl";
+import baseUrl from "../../common/baseUrl";
 
 export const SET_CURRENT_USER = "SET_CURRENT_USER"
 
@@ -25,7 +25,7 @@ export const loginUser = (user, dispatch) => {
         })
         .then(async (data) => {
           const token = data.token;
-          await AsyncStorage.setItem("fTjAsWiT", token);
+          await AsyncStorage.setItem("jwt", token);
           const decoded = jwt_decode(token);
           dispatch(setCurrentUser(decoded, user));
           resolve(); 
@@ -52,7 +52,7 @@ export const getUserProfile = (id) => {
 }
 
 export const logOut = async (dispatch) => {
-    await AsyncStorage.removeItem("fTjAsWiT");
+    await AsyncStorage.removeItem("jwt");
     dispatch(setCurrentUser({}))
 }
 

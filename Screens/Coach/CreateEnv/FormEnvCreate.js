@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { ScrollView, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, View } from 'react-native'
-
+import { ScrollView, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, View, Switch } from 'react-native'
 
 import AuthGlobal from '../../../Context/store/AuthGlobal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import baseUrl from '../../../assets/common/baseUrl';
+import baseUrl from '../../../common/baseUrl';
 import axios from 'axios';
 
 const { width, height } = Dimensions.get('window')
@@ -14,16 +13,28 @@ const FormEnvCreate = ({ navigation }) => {
   const context = useContext(AuthGlobal)
   const initialValues = {
     name: '',
-    mainPlace: ''
+    mainPlace: '',
+    mainDays: [],
+    mainHour: ''
   }
   const [values, setValues] = useState(initialValues)
   const [error, setError] = useState('')
   const [token, setToken] = useState(null)
+  const [daySelected, setDayselected] = useState([])
   const nameRef = useRef()
   const mainPlaceRef = useRef()
+  const days = [
+    { name: 'Lunes', value: 1 },
+    { name: 'Martes', value: 2 },
+    { name: 'Miércoles', value: 3 },
+    { name: 'Jueves', value: 4 },
+    { name: 'Viernes', value: 5 },
+    { name: 'Sábado', value: 6 },
+    { name: 'Domingo', value: 7 },
+  ]
 
   useEffect(() => {
-    AsyncStorage.getItem('fTjAsWiT')
+    AsyncStorage.getItem('jwt')
       .then((res) => {
         setToken(res)
       })
@@ -31,6 +42,14 @@ const FormEnvCreate = ({ navigation }) => {
 
   const manageInputs = (name, value) => {
     setValues({ ...values, [name]: value });
+  }
+
+  const toggleDay = (day) => {
+    if (daySelected.includes(day)) {
+      setDayselected(daySelected.filter((d) => d !== day))
+    } else {
+      setDayselected([...daySelected, day])
+    }
   }
 
   const resetForm = () => {
@@ -108,6 +127,26 @@ const FormEnvCreate = ({ navigation }) => {
         ref={mainPlaceRef}
         onChangeText={(value) => manageInputs('mainPlace', value)}
       />
+      <View style={styles.daysCont}>
+        {
+          days.map((day) => (
+            <View key={day.value} style={styles.dayCont}>
+              <Text style={styles.dayName}>{day.name}</Text>
+              <Switch
+                value={daySelected.includes(day.value)}
+                onValueChange={() => toggleDay(day.value)}
+                style={styles.daySwitch}
+              />
+            </View>
+          ))
+        }
+      </View>
+      <View style={styles.hoursCont}>
+        <TextInput
+          style={styles.input}
+          keyboardType='numeric'
+        />
+      </View>
       <View>
         <Text style={styles.errors}>{error ? error : ''}</Text>
       </View>
@@ -130,7 +169,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: 20,
-    height: height
+    minHeight: height,
+    paddingVertical: 40
   },
   title: {
     width: width,

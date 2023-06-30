@@ -23,7 +23,7 @@ const Header = () => {
                     style={styles.logOut}
                     onPress={async () => {
                         try {
-                            await AsyncStorage.removeItem("fTjAsWiT")
+                            await AsyncStorage.removeItem("jwt")
                             logOut(context.dispatch);
                         } catch (error) {
                             console.error(error);

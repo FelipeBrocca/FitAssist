@@ -4,11 +4,12 @@ import AppNavigator from './Navigators/Main';
 // CONTEXT API
 import Auth from './Context/store/Auth'
 
+
 const App = () => {
 
   return (
     <Auth>
-      <AppNavigator />
+        <AppNavigator />
     </Auth>
   );
 }

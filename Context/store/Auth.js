@@ -16,7 +16,7 @@ const Auth = props => {
 
   const getStorage = async () => {
     try {
-      let item = await AsyncStorage.getItem('fTjAsWiT');
+      let item = await AsyncStorage.getItem('jwt');
       return item;
     } catch (error) {
       console.error('Error retrieving data from AsyncStorage:', error);

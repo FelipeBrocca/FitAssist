@@ -1,11 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
 
-import baseUrl from '../../assets/common/baseUrl'
+import baseUrl from '../../common/baseUrl'
 import axios from 'axios'
 import AuthGlobal from '../../Context/store/AuthGlobal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateEnv from '../Coach/CreateEnv/CreateEnv';
+import EnvList from '../Coach/EnvList/EnvList'
+import CommonEnvList from '../CommonUser/EnvList/CommonEnvList'
 
 
 
@@ -14,50 +17,63 @@ const { width, height } = Dimensions.get('window')
 const Home = ({ navigation }) => {
 
     const context = useContext(AuthGlobal)
-    const [envi, setEnvi] = useState([])
+    const [environments, setEnvironments] = useState([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (context.stateUser.isAuthenticated === false) {
             navigation.navigate("Login")
         }
-        AsyncStorage.getItem('fTjAsWiT')
-            .then((res) => {
-                axios
-                    .get(`${baseUrl}/users/${context.stateUser.user.userId}`, {
-                        headers: { Authorization: `Bearer ${res}` }
-                    })
-                    .then(envis => {
-                        envis.data.environment.map((env) => (
-                            axios
-                                .get(`${baseUrl}/environments/${env}`, {
-                                    headers: { Authorization: `Bearer ${res}` }
-                                })
-                                .then(en => setEnvi(prev => [...prev, en.data]))
-                        ))
-                    })
-            })
-            .catch(err => console.log(err))
-
-        return () => {
-            setEnvi([])
-        }
     }, [context.stateUser.isAuthenticated])
+
+    useFocusEffect((
+        useCallback(() => {
+            setLoading(true)
+            AsyncStorage.getItem('jwt')
+                .then((res) => {
+                    axios
+                        .get(`${baseUrl}/users/${context.stateUser.user.userId}`, {
+                            headers: { Authorization: `Bearer ${res}` }
+                        })
+                        .then(envis => {
+                            if (envis.data.environment[0]) {
+                                envis.data.environment.map((env) => (
+                                    axios
+                                        .get(`${baseUrl}/environments/${env}`, {
+                                            headers: { Authorization: `Bearer ${res}` }
+                                        })
+                                        .then(en => (
+                                            setEnvironments(prev => [...prev, en.data],
+                                                setTimeout(() => {
+                                                    setLoading(false)
+                                                }, 1000)
+                                            )
+                                        ))
+                                ))
+                            } else setLoading(false);
+                        })
+                })
+                .catch(err => console.log(err))
+
+            return () => {
+                setEnvironments([])
+            }
+        }, [])
+    ))
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.envList}>
                 {
-                    context?.stateUser?.user?.isCoach
-                    ? envi[0]
-                    ? envi.map((envi, index) => (
-                        <Text key={index}>{envi.mainPlace}</Text>
-                    ))
-                    : <Text>No tiene grupo creado</Text>
-                    : envi[0]
-                    ? envi.map((envi, index) => (
-                        <Text key={index}>{envi.mainPlace}</Text>
-                    ))
-                    : <Text>No es coach</Text>
+                    loading
+                        ? <Text>Cargando...</Text>
+                        : <>
+                            {
+                                context?.stateUser?.user?.isCoach
+                                    ? <EnvList environments={environments} />
+                                    : <CommonEnvList environments={environments} />
+                            }
+                        </>
                 }
             </ScrollView>
             {
@@ -85,7 +101,9 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'flex-start',
+        paddingVertical: 50,
+        gap: 60
     }
 })
 

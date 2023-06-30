@@ -3,7 +3,7 @@ import { View, StyleSheet, Dimensions, ScrollView } from 'react-native'
 import RegisterForm from './RegisterForm'
 
 
-import baseUrl from '../../assets/common/baseUrl';
+import baseUrl from '../../common/baseUrl';
 import axios from 'axios'
 import AuthGlobal from '../../Context/store/AuthGlobal';
 

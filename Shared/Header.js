@@ -1,8 +1,9 @@
-import React, {useContext} from 'react'
+import React, { useContext } from 'react'
 import { SafeAreaView, Text, Image, StyleSheet, Dimensions, View, TouchableOpacity } from 'react-native'
 import { logOut } from '../Context/actions/Auth.actions'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../Context/store/AuthGlobal';
+import { useEnvironments } from '../Context/EnvContext';
 
 
 
@@ -11,6 +12,7 @@ const { width, height } = Dimensions.get('window')
 const Header = () => {
 
     const context = useContext(AuthGlobal)
+    const { resetEnvs } = useEnvironments()
 
     return (
         <SafeAreaView style={styles.header}>
@@ -18,24 +20,25 @@ const Header = () => {
                 <Image style={styles.logo} source={require('../assets/logo-claro.png')} />
                 <Text style={styles.logoTitle}>FitAssist</Text>
             </View>
-            
+
             <TouchableOpacity
-                    style={styles.logOut}
-                    onPress={async () => {
-                        try {
-                            await AsyncStorage.removeItem("jwt")
-                            logOut(context.dispatch);
-                        } catch (error) {
-                            console.error(error);
-                        } finally {
-                            if (Object.keys(context.stateUser.user).length <= 0) {
-                                navigation.navigate("Login")
-                            }
+                style={styles.logOut}
+                onPress={async () => {
+                    try {
+                        resetEnvs()
+                        await AsyncStorage.removeItem("jwt")
+                        logOut(context.dispatch);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        if (Object.keys(context.stateUser.user).length <= 0) {
+                            navigation.navigate("Login")
                         }
-                    }}
-                >
-                    <Text style={styles.logOutText}>Cerrar sesión</Text>
-                </TouchableOpacity>
+                    }
+                }}
+            >
+                <Text style={styles.logOutText}>Cerrar sesión</Text>
+            </TouchableOpacity>
         </SafeAreaView>
     )
 }

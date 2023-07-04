@@ -11,6 +11,8 @@ import Home from '../Screens/Home/Home'
 import Loader from '../Screens/Loader/Loader'
 import Header from "../Shared/Header";
 import FormEnvCreate from "../Screens/Coach/CreateEnv/FormEnvCreate";
+import EditEnvForm from "../Screens/Coach/EditEnv/EditEnvForm";
+import EnvProfile from "../Screens/Coach/EnvProfile/EnvProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +47,16 @@ const AuthNavigator = () => {
                       name="FormEnvCreate"
                       options={{ headerShown: false }}
                       component={FormEnvCreate}
+                    />
+                    <Stack.Screen
+                      name="EnvProfile"
+                      options={{ headerShown: false }}
+                      component={EnvProfile}
+                    />
+                    <Stack.Screen
+                      name="EditEnvForm"
+                      options={{ headerShown: false }}
+                      component={EditEnvForm}
                     />
                   </>
                   : null

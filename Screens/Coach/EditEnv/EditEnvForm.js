@@ -1,26 +1,34 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { ScrollView, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, View, Switch } from 'react-native'
+import React, { useState, useRef, useEffect, useContext } from 'react'
+import { Text, StyleSheet, ScrollView, View, TextInput, Switch, Dimensions, TouchableOpacity } from 'react-native'
+import { useRoute } from '@react-navigation/native';
 
 import AuthGlobal from '../../../Context/store/AuthGlobal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEnvironments } from '../../../Context/EnvContext';
 
+
 const { width, height } = Dimensions.get('window')
 
-const FormEnvCreate = ({ navigation }) => {
 
+const EditEnvForm = ({ navigation }) => {
+
+  const route = useRoute()
+  const { environment } = route.params
   const context = useContext(AuthGlobal)
-  const { createEnv } = useEnvironments()
+  const { editEnv } = useEnvironments()
   const initialValues = {
-    name: '',
-    mainPlace: '',
-    mainDays: [],
-    mainHours: {}
+    name: environment?.name,
+    mainPlace: environment?.mainPlace,
+    mainDays: environment?.mainDays,
+    mainHours: {
+      since: environment?.mainHours?.since,
+      to: environment?.mainHours?.to
+    }
   }
   const [values, setValues] = useState(initialValues)
   const [error, setError] = useState('')
   const [token, setToken] = useState(null)
-  const [daySelected, setDayselected] = useState([])
+  const [daySelected, setDayselected] = useState(environment?.mainDays)
   const nameRef = useRef()
   const mainPlaceRef = useRef()
   const days = [
@@ -62,7 +70,7 @@ const FormEnvCreate = ({ navigation }) => {
   }
 
   const resetForm = () => {
-    navigation.navigate('Home')
+    navigation.navigate('EnvProfile', { environment: environment })
   }
 
   const handleSubmit = () => {
@@ -74,16 +82,21 @@ const FormEnvCreate = ({ navigation }) => {
       let newEnvironment = {
         name: values.name,
         mainPlace: values.mainPlace,
-        mainHours: values.mainHours,
+        mainHours: {
+          since: values?.mainHours?.since,
+          to: values?.mainHours?.to
+        },
         mainDays: daySelected,
         coach: context.stateUser.user.userId,
         clients: [],
         trainings: [],
         rating: 0
       }
-      createEnv(newEnvironment, token, navigation)
+      editEnv(environment._id, newEnvironment, token, navigation)
     }
   }
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
@@ -93,12 +106,14 @@ const FormEnvCreate = ({ navigation }) => {
         style={styles.input}
         placeholder='Nombre del grupo'
         ref={nameRef}
+        value={values.name}
         onChangeText={(value) => manageInputs('name', value)}
       />
       <TextInput
         style={styles.input}
         placeholder='Lugar predeterminado'
         ref={mainPlaceRef}
+        value={values.mainPlace}
         onChangeText={(value) => manageInputs('mainPlace', value)}
       />
       <View style={styles.daysCont}>
@@ -120,6 +135,7 @@ const FormEnvCreate = ({ navigation }) => {
           <Text style={styles.hourText}>Desde</Text>
           <TextInput
             style={styles.inputHour}
+            value={values?.mainHours?.since}
             keyboardType='numeric'
             placeholder='hs.'
             onChangeText={(value) => manageHours('since', value)}
@@ -129,6 +145,7 @@ const FormEnvCreate = ({ navigation }) => {
           <Text style={styles.hourText}>Hasta</Text>
           <TextInput
             style={styles.inputHour}
+            value={values?.mainHours?.to}
             keyboardType='numeric'
             placeholder='hs.'
             onChangeText={(value) => manageHours('to', value)}
@@ -241,4 +258,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default FormEnvCreate
+export default EditEnvForm

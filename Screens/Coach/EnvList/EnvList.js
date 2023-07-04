@@ -1,9 +1,10 @@
 import React from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
-const EnvList = ({ environments }) => {
+const EnvList = ({ environments, navigation }) => {
+
     if (environments[0]) {
-        console.log(environments)
         return (
             environments.map((envi, index) => (
                 <View style={styles.container} key={index}>
@@ -17,17 +18,29 @@ const EnvList = ({ environments }) => {
                                     <Text>Horario: {envi.trainings[0].hour}</Text>
                                 </>
                                 : <>
-                                    <Text style={styles.place}>Lugar: {envi.mainPlace}</Text>
+                                    <Text style={styles.noTraining}>
+                                        No hay entrenamiento en fila
+                                    </Text>
                                 </>
                         }
                     </View>
                     <View style={styles.buttonCont}>
-
+                        <TouchableOpacity
+                            style={styles.buttonTouch}
+                            onPress={() => navigation.navigate('EnvProfile', { environment: envi })}
+                        >
+                            <Icon
+                                name='cog'
+                                style={styles.buttonIcon}
+                            />
+                        </TouchableOpacity>
                     </View>
                 </View>
             ))
         )
-    } else return null
+    } else return (
+        <Text>Crea tu primer grupo!</Text>
+    )
 
 }
 const styles = StyleSheet.create({
@@ -46,13 +59,30 @@ const styles = StyleSheet.create({
         left: 10,
         top: -30,
         fontSize: 20,
-        color: 'whitesmoke'
+        color: 'whitesmoke',
+        fontWeight: 800
     },
     content: {
-        width: '68%'
+        width: '68%',
+        justifyContent: 'center'
     },
     buttonCont: {
-        width: '22%'
+        width: '22%',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    noTraining: {
+        color: 'grey',
+        fontSize: 16
+    },
+    buttonTouch: {
+        padding: 10,
+        backgroundColor: 'grey',
+        borderRadius: 5
+    },
+    buttonIcon: {
+        fontSize: 25,
+        color: 'whitesmoke'
     }
 })
 

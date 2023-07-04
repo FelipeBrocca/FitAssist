@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateEnv from '../Coach/CreateEnv/CreateEnv';
 import EnvList from '../Coach/EnvList/EnvList'
 import CommonEnvList from '../CommonUser/EnvList/CommonEnvList'
+import { useEnvironments } from '../../Context/EnvContext'
 
 
 
@@ -17,8 +18,7 @@ const { width, height } = Dimensions.get('window')
 const Home = ({ navigation }) => {
 
     const context = useContext(AuthGlobal)
-    const [environments, setEnvironments] = useState([])
-    const [loading, setLoading] = useState(false)
+    const { loading, environments, getEnvironments } = useEnvironments()
 
     useEffect(() => {
         if (context.stateUser.isAuthenticated === false) {
@@ -26,43 +26,13 @@ const Home = ({ navigation }) => {
         }
     }, [context.stateUser.isAuthenticated])
 
-    useFocusEffect((
-        useCallback(() => {
-            setLoading(true)
-            AsyncStorage.getItem('jwt')
-                .then((res) => {
-                    axios
-                        .get(`${baseUrl}/users/${context.stateUser.user.userId}`, {
-                            headers: { Authorization: `Bearer ${res}` }
-                        })
-                        .then(envis => {
-                            if (envis.data.environment[0]) {
-                                envis.data.environment.map((env) => (
-                                    axios
-                                        .get(`${baseUrl}/environments/${env}`, {
-                                            headers: { Authorization: `Bearer ${res}` }
-                                        })
-                                        .then(en => (
-                                            setEnvironments(prev => [...prev, en.data],
-                                                setTimeout(() => {
-                                                    setLoading(false)
-                                                }, 1000)
-                                            )
-                                        ))
-                                ))
-                            } else setLoading(false);
-                        })
-                })
-                .catch(err => console.log(err))
-
-            return () => {
-                setEnvironments([])
-            }
-        }, [])
-    ))
+    useEffect(() => {
+        getEnvironments()
+    }, [])
 
     return (
         <View style={styles.container}>
+            <Text style={styles.username}>Hola {context.stateUser.user.name}!</Text>
             <ScrollView contentContainerStyle={styles.envList}>
                 {
                     loading
@@ -70,7 +40,7 @@ const Home = ({ navigation }) => {
                         : <>
                             {
                                 context?.stateUser?.user?.isCoach
-                                    ? <EnvList environments={environments} />
+                                    ? <EnvList navigation={navigation} environments={environments} />
                                     : <CommonEnvList environments={environments} />
                             }
                         </>
@@ -89,21 +59,27 @@ const styles = StyleSheet.create({
 
     container: {
         width: width,
-        height: height - 50,
-        flexDirection: 'row',
+        minHeight: height - 50,
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#363435'
     },
     envList: {
         width: width,
-        height: height,
+        minHeight: height,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-start',
         paddingVertical: 50,
         gap: 60
+    },
+    username: {
+        color: 'whitesmoke',
+        textAlign: 'left',
+        width: '100%',
+        fontSize: 30
     }
 })
 

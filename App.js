@@ -3,13 +3,16 @@ import AppNavigator from './Navigators/Main';
 
 // CONTEXT API
 import Auth from './Context/store/Auth'
+import { EnvironmentsProvider } from './Context/EnvContext';
 
 
 const App = () => {
 
   return (
     <Auth>
+      <EnvironmentsProvider>
         <AppNavigator />
+      </EnvironmentsProvider>
     </Auth>
   );
 }

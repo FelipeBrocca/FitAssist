@@ -35,6 +35,24 @@ const EnvList = ({ environments, navigation }) => {
                             />
                         </TouchableOpacity>
                     </View>
+                    <View style={styles.buttonsCont}>
+                        <TouchableOpacity
+                            style={styles.buttonTouchCheck}
+                        >
+                            <Icon
+                                name='check'
+                                style={styles.buttonCheck}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.buttonTouchNo}
+                        >
+                            <Icon
+                                name='remove'
+                                style={styles.buttonNo}
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
             ))
         )
@@ -46,7 +64,7 @@ const EnvList = ({ environments, navigation }) => {
 const styles = StyleSheet.create({
     container: {
         width: '90%',
-        height: 80,
+        height: 130,
         borderWidth: 1,
         borderColor: 'grey',
         borderRadius: 10,
@@ -67,23 +85,53 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     buttonCont: {
-        width: '22%',
+        width: 40,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        position: 'absolute',
+        top: -30,
+        right: 0
     },
     noTraining: {
         color: 'grey',
         fontSize: 16
     },
     buttonTouch: {
-        padding: 10,
-        backgroundColor: 'grey',
         borderRadius: 5
     },
     buttonIcon: {
         fontSize: 25,
         color: 'whitesmoke'
-    }
+    },
+    buttonTouchCheck: {
+        width: 40,
+        height: 40,
+        backgroundColor: 'rgba(0, 202, 166, 0.5)',
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    buttonsCont: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10
+    },
+    buttonTouchNo: {
+        width: 40,
+        height: 40,
+        backgroundColor: 'rgba(255, 0, 0, 0.5)',
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    buttonCheck: {
+        fontSize: 20,
+        color: 'whitesmoke'
+    },
+    buttonNo: {
+        fontSize: 20,
+        color: 'whitesmoke'
+    },
 })
 
 export default EnvList

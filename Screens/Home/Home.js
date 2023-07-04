@@ -33,12 +33,12 @@ const Home = ({ navigation }) => {
                 loading
                     ? <Spinner />
                     : <>
-                        <Text style={styles.username}>Hola {context.stateUser.user.name}!</Text>
                         <ScrollView contentContainerStyle={styles.envList}>
+                        <Text style={styles.username}>Hola {context.stateUser.user.name}!</Text>
                             {
                                 context?.stateUser?.user?.isCoach
                                     ? <EnvList navigation={navigation} environments={environments} />
-                                    : <CommonEnvList environments={environments} />
+                                    : <CommonEnvList navigation={navigation} environments={environments} />
                             }
                         </ScrollView>
                         {
@@ -69,14 +69,15 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        paddingVertical: 50,
+        paddingVertical: 20,
         gap: 60
     },
     username: {
         color: 'whitesmoke',
         textAlign: 'left',
         width: '100%',
-        fontSize: 30
+        fontSize: 30,
+        paddingLeft: 20
     }
 })
 

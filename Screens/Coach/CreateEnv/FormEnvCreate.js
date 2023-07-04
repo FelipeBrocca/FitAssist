@@ -81,7 +81,11 @@ const FormEnvCreate = ({ navigation }) => {
         trainings: [],
         rating: 0
       }
-      createEnv(newEnvironment, navigation)
+      if (context.stateUser.user.isCoach) {
+        createEnv(newEnvironment, navigation)
+      } else {
+        console.log('Error: Not allowed');
+      }
     }
   }
   return (

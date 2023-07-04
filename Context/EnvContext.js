@@ -123,17 +123,31 @@ export const EnvironmentsProvider = ({ children }) => {
 
     const deleteEnv = (id, navigation) => {
         axios
-            .delete(`${baseUrl}/environments/${id}`, {
+            .get(`${baseUrl}/users/${context.stateUser.user.userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             .then((res) => {
-                if (res.status === 204) {
-                    setEnvironments([])
-                    setTimeout(() => {
-                        navigation.navigate("Home")
-                        getEnvironments()
-                    }, 300)
-                }
+                let userData = res.data;
+                userData.environment = userData.environment.filter(fid => fid !== id)
+                axios
+                    .put(`${baseUrl}/users/${context.stateUser.user.userId}`, userData, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                    .then(() => {
+                        axios
+                            .delete(`${baseUrl}/environments/${id}`, {
+                                headers: { Authorization: `Bearer ${token}` }
+                            })
+                            .then((res) => {
+                                if (res.status === 204) {
+                                    setEnvironments([])
+                                    setTimeout(() => {
+                                        navigation.navigate("Home")
+                                        getEnvironments()
+                                    }, 300)
+                                }
+                            })
+                    })
             })
             .catch((err) => console.log(err))
     }

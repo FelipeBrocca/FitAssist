@@ -24,6 +24,13 @@ const EnvProfile = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backCont}>
+                <Icon
+                    name='reply'
+                    style={styles.backIcon}
+                />
+                <Text style={styles.backText}>Volver</Text>
+            </TouchableOpacity>
             <View style={styles.content}>
                 <View style={styles.contentData}>
                     <Text style={styles.title}>{environment?.name}</Text>
@@ -64,8 +71,9 @@ const styles = StyleSheet.create({
         minHeight: height,
         backgroundColor: '#363435',
         alignItems: 'center',
-        paddingTop: 60,
-        gap: 50
+        paddingTop: 100,
+        gap: 50,
+        position: 'relative'
     },
     content: {
         flexDirection: 'row',
@@ -144,6 +152,22 @@ const styles = StyleSheet.create({
         color: 'whitesmoke',
         fontSize: 16,
         fontWeight: 800
+    },
+    backCont: {
+        position: 'absolute',
+        top: 15,
+        left: 15,
+        flexDirection: 'row',
+        gap: 10,
+        alignItems: 'center'
+    },
+    backText: {
+        fontSize: 25,
+        color: 'whitesmoke'
+    },
+    backIcon: {
+        fontSize: 20,
+        color: 'whitesmoke'
     }
 })
 

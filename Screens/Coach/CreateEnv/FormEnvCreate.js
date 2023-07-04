@@ -81,7 +81,7 @@ const FormEnvCreate = ({ navigation }) => {
         trainings: [],
         rating: 0
       }
-      createEnv(newEnvironment, token, navigation)
+      createEnv(newEnvironment, navigation)
     }
   }
   return (

@@ -15,52 +15,59 @@ export const EnvironmentsProvider = ({ children }) => {
 
     const context = useContext(AuthGlobal)
     const [environments, setEnvironments] = useState([])
+    const [token, setToken] = useState(null)
     const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        AsyncStorage.getItem('jwt')
+            .then((res) => {
+                setToken(res)
+            })
+    }, [])
 
     const getEnvironments = () => {
         setLoading(true)
-        AsyncStorage.getItem('jwt')
-            .then((res) => {
-                axios
-                    .get(`${baseUrl}/users/${context.stateUser.user.userId}`, {
-                        headers: { Authorization: `Bearer ${res}` }
-                    })
-                    .then(envis => {
-                        if (envis.data.environment[0]) {
-                            const environmentPromises = envis.data.environment.map((env) => (
-                                axios.get(`${baseUrl}/environments/${env}`, {
-                                    headers: { Authorization: `Bearer ${res}` }
-                                })
-                            ));
+        if (token) {
+            axios
+                .get(`${baseUrl}/users/${context.stateUser.user.userId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                .then(envis => {
+                    if (envis.data.environment[0]) {
+                        const environmentPromises = envis.data.environment.map((env) => (
+                            axios.get(`${baseUrl}/environments/${env}`, {
+                                headers: { Authorization: `Bearer ${token}` }
+                            })
+                        ));
 
-                            Promise.all(environmentPromises)
-                                .then(environmentsData => {
-                                    const validEnvironmentsData = environmentsData.filter(en => en && en.data && en.data._id);
-                                    const environments = validEnvironmentsData.map(en => en.data);
-                                    setEnvironments(prev => {
-                                        const newEnvironments = environments.filter(env => {
-                                            return !prev.some(prevEnv => prevEnv._id === env._id);
-                                        });
-                                        setTimeout(() => {
-                                            setLoading(false);
-                                        }, 1000);
-                                        return [...prev, ...newEnvironments];
+                        Promise.all(environmentPromises)
+                            .then(environmentsData => {
+                                const validEnvironmentsData = environmentsData.filter(en => en && en.data && en.data._id);
+                                const environments = validEnvironmentsData.map(en => en.data);
+                                setEnvironments(prev => {
+                                    const newEnvironments = environments.filter(env => {
+                                        return !prev.some(prevEnv => prevEnv._id === env._id);
                                     });
-                                    setLoading(false);
-                                })
-                                .catch(error => {
-                                    console.log(error);
-                                    setLoading(false);
+                                    setTimeout(() => {
+                                        setLoading(false);
+                                    }, 1000);
+                                    return [...prev, ...newEnvironments];
                                 });
-                        } else {
-                            setLoading(false);
-                        }
-                    })
-            })
-            .catch(err => console.log(err))
+                                setLoading(false);
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                setLoading(false);
+                            });
+                    } else {
+                        setLoading(false);
+                    }
+                })
+        }
     }
 
-    const createEnv = (newEnvironment, token, navigation) => {
+
+    const createEnv = (newEnvironment, navigation) => {
         axios
             .post(`${baseUrl}/environments`, newEnvironment, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -97,13 +104,30 @@ export const EnvironmentsProvider = ({ children }) => {
             })
     }
 
-    const editEnv = (id, newEnvironment, token, navigation) => {
+    const editEnv = (id, newEnvironment, navigation) => {
         axios
             .put(`${baseUrl}/environments/${id}`, newEnvironment, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             .then((res) => {
                 if (res.status === 201) {
+                    setEnvironments([])
+                    setTimeout(() => {
+                        navigation.navigate("Home")
+                        getEnvironments()
+                    }, 300)
+                }
+            })
+            .catch((err) => console.log(err))
+    }
+
+    const deleteEnv = (id, navigation) => {
+        axios
+            .delete(`${baseUrl}/environments/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then((res) => {
+                if (res.status === 204) {
                     setEnvironments([])
                     setTimeout(() => {
                         navigation.navigate("Home")
@@ -126,6 +150,7 @@ export const EnvironmentsProvider = ({ children }) => {
             loading,
             createEnv,
             editEnv,
+            deleteEnv,
             resetEnvs
         }}>
             {children}

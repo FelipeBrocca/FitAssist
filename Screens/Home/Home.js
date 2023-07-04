@@ -1,15 +1,12 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native'
-import { useFocusEffect } from '@react-navigation/native'
 
-import baseUrl from '../../common/baseUrl'
-import axios from 'axios'
 import AuthGlobal from '../../Context/store/AuthGlobal';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateEnv from '../Coach/CreateEnv/CreateEnv';
 import EnvList from '../Coach/EnvList/EnvList'
 import CommonEnvList from '../CommonUser/EnvList/CommonEnvList'
 import { useEnvironments } from '../../Context/EnvContext'
+import Spinner from '../Spinner/Spinner';
 
 
 
@@ -32,24 +29,24 @@ const Home = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.username}>Hola {context.stateUser.user.name}!</Text>
-            <ScrollView contentContainerStyle={styles.envList}>
-                {
-                    loading
-                        ? <Text>Cargando...</Text>
-                        : <>
+            {
+                loading
+                    ? <Spinner />
+                    : <>
+                        <Text style={styles.username}>Hola {context.stateUser.user.name}!</Text>
+                        <ScrollView contentContainerStyle={styles.envList}>
                             {
                                 context?.stateUser?.user?.isCoach
                                     ? <EnvList navigation={navigation} environments={environments} />
                                     : <CommonEnvList environments={environments} />
                             }
-                        </>
-                }
-            </ScrollView>
-            {
-                context?.stateUser?.user?.isCoach
-                    ? <CreateEnv navigation={navigation} />
-                    : null
+                        </ScrollView>
+                        {
+                            context?.stateUser?.user?.isCoach
+                                ? <CreateEnv navigation={navigation} />
+                                : null
+                        }
+                    </>
             }
         </View>
     )

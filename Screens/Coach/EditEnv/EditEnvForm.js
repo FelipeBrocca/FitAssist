@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect, useContext } from 'react'
 import { Text, StyleSheet, ScrollView, View, TextInput, Switch, Dimensions, TouchableOpacity } from 'react-native'
 import { useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 import AuthGlobal from '../../../Context/store/AuthGlobal';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEnvironments } from '../../../Context/EnvContext';
+import DeleteEnv from '../DeleteEnv/DeleteEnv';
 
 
 const { width, height } = Dimensions.get('window')
@@ -25,9 +26,9 @@ const EditEnvForm = ({ navigation }) => {
       to: environment?.mainHours?.to
     }
   }
+  const [deleteModal, setDeleteModal] = useState(false)
   const [values, setValues] = useState(initialValues)
   const [error, setError] = useState('')
-  const [token, setToken] = useState(null)
   const [daySelected, setDayselected] = useState(environment?.mainDays)
   const nameRef = useRef()
   const mainPlaceRef = useRef()
@@ -41,12 +42,7 @@ const EditEnvForm = ({ navigation }) => {
     { name: 'Domingo', value: 7 },
   ]
 
-  useEffect(() => {
-    AsyncStorage.getItem('jwt')
-      .then((res) => {
-        setToken(res)
-      })
-  }, [])
+
 
   const manageInputs = (name, value) => {
     setValues({ ...values, [name]: value });
@@ -92,78 +88,92 @@ const EditEnvForm = ({ navigation }) => {
         trainings: [],
         rating: 0
       }
-      editEnv(environment._id, newEnvironment, token, navigation)
+      editEnv(environment._id, newEnvironment, navigation)
     }
   }
 
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>
-        Crear grupo
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder='Nombre del grupo'
-        ref={nameRef}
-        value={values.name}
-        onChangeText={(value) => manageInputs('name', value)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder='Lugar predeterminado'
-        ref={mainPlaceRef}
-        value={values.mainPlace}
-        onChangeText={(value) => manageInputs('mainPlace', value)}
-      />
-      <View style={styles.daysCont}>
-        {
-          days.map((day) => (
-            <View key={day.value} style={styles.dayCont}>
-              <Text style={styles.dayName}>{day.name}</Text>
-              <Switch
-                value={daySelected.includes(day.value)}
-                onValueChange={() => toggleDay(day.value)}
-                style={styles.daySwitch}
-              />
-            </View>
-          ))
-        }
-      </View>
-      <View style={styles.hoursCont}>
-        <View style={styles.hourCont}>
-          <Text style={styles.hourText}>Desde</Text>
-          <TextInput
-            style={styles.inputHour}
-            value={values?.mainHours?.since}
-            keyboardType='numeric'
-            placeholder='hs.'
-            onChangeText={(value) => manageHours('since', value)}
+    <>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.titleCont}>
+          <Text style={styles.title}>
+            {environment?.name}
+          </Text>
+          <Icon
+            name='trash-o'
+            style={styles.iconTrash}
+            onPress={() => setDeleteModal(true)}
           />
         </View>
-        <View style={styles.hourCont}>
-          <Text style={styles.hourText}>Hasta</Text>
-          <TextInput
-            style={styles.inputHour}
-            value={values?.mainHours?.to}
-            keyboardType='numeric'
-            placeholder='hs.'
-            onChangeText={(value) => manageHours('to', value)}
-          />
+        <TextInput
+          style={styles.input}
+          placeholder='Nombre del grupo'
+          ref={nameRef}
+          value={values.name}
+          onChangeText={(value) => manageInputs('name', value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder='Lugar predeterminado'
+          ref={mainPlaceRef}
+          value={values.mainPlace}
+          onChangeText={(value) => manageInputs('mainPlace', value)}
+        />
+        <View style={styles.daysCont}>
+          {
+            days.map((day) => (
+              <View key={day.value} style={styles.dayCont}>
+                <Text style={styles.dayName}>{day.name}</Text>
+                <Switch
+                  value={daySelected.includes(day.value)}
+                  onValueChange={() => toggleDay(day.value)}
+                  style={styles.daySwitch}
+                />
+              </View>
+            ))
+          }
         </View>
-      </View>
-      <View>
-        <Text style={styles.errors}>{error ? error : ''}</Text>
-      </View>
-      <View style={styles.buttonsCont}>
-        <TouchableOpacity onPress={() => resetForm()} style={styles.cancel}>
-          <Text style={styles.buttText}>Cancelar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleSubmit()} style={styles.confirm}>
-          <Text style={styles.buttText}>Confirmar</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        <View style={styles.hoursCont}>
+          <View style={styles.hourCont}>
+            <Text style={styles.hourText}>Desde</Text>
+            <TextInput
+              style={styles.inputHour}
+              value={values?.mainHours?.since}
+              keyboardType='numeric'
+              placeholder='hs.'
+              onChangeText={(value) => manageHours('since', value)}
+            />
+          </View>
+          <View style={styles.hourCont}>
+            <Text style={styles.hourText}>Hasta</Text>
+            <TextInput
+              style={styles.inputHour}
+              value={values?.mainHours?.to}
+              keyboardType='numeric'
+              placeholder='hs.'
+              onChangeText={(value) => manageHours('to', value)}
+            />
+          </View>
+        </View>
+        <View>
+          <Text style={styles.errors}>{error ? error : ''}</Text>
+        </View>
+        <View style={styles.buttonsCont}>
+          <TouchableOpacity onPress={() => resetForm()} style={styles.cancel}>
+            <Text style={styles.buttText}>Cancelar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleSubmit()} style={styles.confirm}>
+            <Text style={styles.buttText}>Confirmar</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      {
+        deleteModal
+          ? <DeleteEnv setDeleteModal={setDeleteModal} environment={environment} navigation={navigation} />
+          : null
+      }
+    </>
   )
 }
 
@@ -177,12 +187,21 @@ const styles = StyleSheet.create({
     minHeight: height,
     paddingVertical: 40
   },
-  title: {
+  titleCont: {
     width: width,
-    textAlign: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20
+  },
+  title: {
     paddingVertical: 20,
     fontSize: 22,
     color: 'whitesmoke'
+  },
+  iconTrash: {
+    fontSize: 30,
+    color: 'red'
   },
   input: {
     width: '80%',

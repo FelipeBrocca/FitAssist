@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         width: width,
-        height: height,
+        height: height + 50,
         backgroundColor: '#363435',
         flexDirection: 'row',
         alignItems: 'center',

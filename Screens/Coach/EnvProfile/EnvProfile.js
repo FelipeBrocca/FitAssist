@@ -21,29 +21,38 @@ const EnvProfile = ({ navigation }) => {
         { name: 'Domingo', value: 7 },
     ]
 
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
                 <View style={styles.contentData}>
-                    <Text>{environment?.name}</Text>
-                    <Text>{environment?.mainPlace}</Text>
-                    {
-                        environment?.mainDays?.map((day, index) => (
-                            <Text key={index}>{days[day].name}</Text>
-                        ))
-                    }
-                    <Text>{environment?.mainHours?.since} hs.</Text>
-                    <Text> - {environment?.mainHours?.to} hs.</Text>
+                    <Text style={styles.title}>{environment?.name}</Text>
+                    <Text style={styles.place}>
+                        {environment?.mainPlace ? environment.mainPlace : 'Sin lugar predeterminado'}
+                    </Text>
+                    <View style={styles.daysCont}>
+                        {
+                            environment?.mainDays[0]
+                                ? environment?.mainDays?.map((day, index) => (
+                                    <Text style={styles.days} key={index}>{days[day - 1]?.name}</Text>
+                                ))
+                                : <Text style={styles.days}>Sin días predeterminados</Text>
+                        }
+                    </View>
+                    <View style={styles.hoursCont}>
+                        <Text style={styles.since}>{environment?.mainHours?.since} hs.</Text>
+                        <Text style={styles.to}> - {environment?.mainHours?.to} hs.</Text>
+                    </View>
                 </View>
                 <TouchableOpacity style={styles.editContent} onPress={() => navigation.navigate('EditEnvForm', { environment: environment })}>
                     <Icon
                         style={styles.iconEdit}
-                        name='pencil'
+                        name='edit'
                     />
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity>
-                <Text>Administrar entrenamientos</Text>
+            <TouchableOpacity style={styles.adminTrainings}>
+                <Text style={styles.admText}>Administrar entrenamientos</Text>
             </TouchableOpacity>
         </View>
     )
@@ -55,7 +64,8 @@ const styles = StyleSheet.create({
         minHeight: height,
         backgroundColor: '#363435',
         alignItems: 'center',
-        paddingTop: 60
+        paddingTop: 60,
+        gap: 50
     },
     content: {
         flexDirection: 'row',
@@ -63,25 +73,77 @@ const styles = StyleSheet.create({
         width: '90%',
         borderWidth: 1,
         borderColor: 'grey',
-        borderRadius: 10
+        borderRadius: 10,
+        minHeight: 150
     },
     contentData: {
-        width: '100%'
+        width: '100%',
+        flexWrap: 'wrap',
+        padding: 10,
+        gap: 5,
+        alignItems: 'center'
     },
     editContent: {
         position: 'absolute',
         top: -20,
         right: 20,
         backgroundColor: '#363435',
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderRadius: 10
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     iconEdit: {
         fontSize: 30,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        padding: 10,
         color: 'whitesmoke'
+    },
+    title: {
+        width: '100%',
+        color: 'whitesmoke',
+        fontSize: 22,
+        textAlign: 'center'
+    },
+    place: {
+        color: 'whitesmoke',
+        fontSize: 16,
+        width: '100%',
+        textAlign: 'center'
+    },
+    daysCont: {
+        width: '80%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 15,
+        borderWidth: 1,
+        borderColor: 'grey',
+        borderRadius: 10,
+        paddingVertical: 4,
+        paddingHorizontal: 6,
+        justifyContent: 'center'
+    },
+    days: {
+        fontSize: 16,
+        color: 'whitesmoke',
+        fontWeight: 600
+    },
+    hoursCont: {
+        flexDirection: 'row',
+        alignItems: 'flex-end'
+    },
+    since: {
+        color: 'whitesmoke'
+    },
+    to: {
+        color: 'whitesmoke'
+    },
+    adminTrainings: {
+        padding: 10,
+        backgroundColor: '#00CAA6',
+        borderRadius: 5
+    },
+    admText: {
+        color: 'whitesmoke',
+        fontSize: 16,
+        fontWeight: 800
     }
 })
 
